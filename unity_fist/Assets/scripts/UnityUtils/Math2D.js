@@ -127,6 +127,21 @@ class Bounds2D
 				Mathf.Lerp(mins.y, maxs.y, Random.value) );
 	}
 
+	function ClampPosition(p:Vector2) : Vector2 
+	{
+		p.x = Mathf.Max( p.x, mins.x );
+		p.y = Mathf.Max( p.y, mins.y );
+
+		p.x = Mathf.Min( p.x, maxs.x );
+		p.y = Mathf.Min( p.y, maxs.y );
+
+		return p;
+	}
+
+
+	//----------------------------------------
+	//  TODO: Not quite a wrap in the modulo sense...more like an opposite-clamp
+	//----------------------------------------
 	function WrapPosition(p:Vector2) : Vector2 
 	{
 		if( p.x < mins.x ) p.x = maxs.x;
@@ -146,8 +161,8 @@ class Bounds2D
 static function Intersect2DLines( s0:Vector2, e0:Vector2, s1:Vector2, e1:Vector2 )
 	: Vector2
 {
-	var si0 = SlopeIntercept( s0, e0 );
-	var si1 = SlopeIntercept( s1, e1 );
+	var si0 = GetSlopeIntercept( s0, e0 );
+	var si1 = GetSlopeIntercept( s1, e1 );
 	var m0 = si0.x; var b0 = si0.y;
 	var m1 = si1.x; var b1 = si1.y;
 
@@ -169,25 +184,28 @@ static function Intersect2DLines( s0:Vector2, e0:Vector2, s1:Vector2, e1:Vector2
 	}
 }
 
-static function SlopeIntercept( s:Vector2, e:Vector2 ) : Vector2
+//----------------------------------------
+//  Returns m,b for y=mx+b given two points on a line
+//----------------------------------------
+static function GetSlopeIntercept( start:Vector2, end:Vector2 ) : Vector2
 {
-	var dx = e.x - s.x;
-	var dy = e.y - s.y;
+	var dx = end.x - start.x;
+	var dy = end.y - start.y;
 	if( Mathf.Abs(dx) < 1e-6 )
 		return Vector2( Mathf.Infinity, Mathf.Infinity );
 	var m = dy/dx;
-	var b = s.y - m*s.x;
+	var b = start.y - m*start.x;
 	return Vector2( m, b );
 }
 
 //----------------------------------------
 //  Returns the Y coordinate of when line (s,e) intersects the X=x vertical line
 //----------------------------------------
-static function EvalLineAtX( s:Vector2, e:Vector2, x:float ) : float
+static function EvalLineAtX( start:Vector2, end:Vector2, x:float ) : float
 {
-	var r = e-s;
-	var t = (x - s.x) / r.x;
-	return s.y + t*r.y;
+	var r = end-start;
+	var t = (x - start.x) / r.x;
+	return start.y + t*r.y;
 }
 
 //----------------------------------------

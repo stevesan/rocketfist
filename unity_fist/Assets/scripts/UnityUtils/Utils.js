@@ -213,6 +213,10 @@ static function GetBoxLesserLength( box : BoxCollider ) : float
 	return minL;
 }
 
+static function GetMeshBounds( mesh : Mesh )
+{
+}
+
 static function GetTransformedBounds( box : BoxCollider ) : Bounds
 {
 	var b = Bounds( box.center, box.size );
